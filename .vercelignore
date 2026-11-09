@@ -1,0 +1,7 @@
+# Upload only what the site build needs: the catalog manifests and site/.
+/*
+!/mods
+!/site
+!/vercel.json
+/mods/*/files
+/site/dist

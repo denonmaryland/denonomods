@@ -1,0 +1,11 @@
+{
+  "label": "Lock screen",
+  "preview": "hello-lock.webp",
+  "wide": "hello-lock-wide.webp",
+  "license": "MIT",
+  "features": [
+    ["A lock screen that greets you", "Your name and logo, a power-down effect when it locks and a power-on animation when it unlocks."],
+    ["Brand presets", "Save combinations of branding and name, then use one, cycle through them, or shuffle on each lock."],
+    ["Typing effects and transitions", "Pick how the password field reacts and how the screen comes back. Works with Omarchy 4.0.x and 4.5."]
+  ]
+}

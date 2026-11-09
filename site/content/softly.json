@@ -1,0 +1,10 @@
+{
+  "label": "Dictation",
+  "preview": "softly.webp",
+  "wide": "softly-wide.webp",
+  "features": [
+    ["Tap, speak, tap", "Tap a key, say it, tap again. The words land where your cursor is."],
+    ["Local Whisper", "Dictation runs on your machine through Voxtype. Nothing leaves it."],
+    ["Quiet by design", "A small pill while it listens and a bar popover for settings and vocabulary, for the names Whisper gets wrong."]
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "label": "Motion",
+  "preview": "tricky-tiles.webp",
+  "wide": "tricky-tiles-wide.webp",
+  "license": "MIT",
+  "figure": "spring",
+  "lead": "Spring physics for switching windows and workspaces. Pick a preset, watch the live preview, then swipe with three fingers and the tiles follow.",
+  "features": [
+    ["Five presets, drawn as their curves", "Spring, Glide, Snappy, Lively and Reduced. Tune duration, bounce and workspace slide, with a focus fade for the arriving window."],
+    ["Try it on your desktop", "A live preview with stills of your own windows. Hold Compare to see stock Omarchy, or play one real step on your desktop."],
+    ["Tiles that follow your fingers", "Pick a trackpad setup: windows and workspaces, side to side, or up and down. Share a motion with a code like TT1-290-15-30-1."]
+  ]
+}

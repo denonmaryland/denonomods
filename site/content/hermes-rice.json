@@ -1,0 +1,10 @@
+{
+  "label": "Look",
+  "license": "MIT",
+  "mock": "hermes",
+  "features": [
+    ["A flat shell", "The window is the only card. Rail, sidebar and conversation sit flush, split by Hermes' own 1px seams."],
+    ["Sessions and Bots side by side", "A 60px rail with Sessions and Bots as first-class destinations in the same sidebar slot."],
+    ["Keeps your look", "Uses your Omarchy palette and fonts. Switch it off any time in Hermes under Settings → Plugins."]
+  ]
+}

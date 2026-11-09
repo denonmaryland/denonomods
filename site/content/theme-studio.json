@@ -1,0 +1,11 @@
+{
+  "label": "Themes",
+  "preview": "theme-studio.webp",
+  "wide": "theme-studio-wide.webp",
+  "license": "MIT",
+  "features": [
+    ["Every theme, from the bar", "Browse installed themes, apply one, rotate through them, and install new ones from a link."],
+    ["Discover and wallpapers", "Discover reads a community theme catalog with previews; Find more searches Openverse for wallpapers."],
+    ["Careful installs", "Git installs are shallow with symlinks off, and updates are checked in a temporary copy before they replace anything."]
+  ]
+}

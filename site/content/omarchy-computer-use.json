@@ -1,0 +1,19 @@
+{
+  "label": "Agents",
+  "license": "MIT",
+  "tags": ["Omarchy"],
+  "terminal": [
+    ["prompt", "claude \"save the draft in Files\""],
+    ["dim", "  ⎿ agent-desktop tree --app nautilus"],
+    ["out", "    window \"Files\" ▸ toolbar ▸ button \"Save\""],
+    ["dim", "  ⎿ agent-desktop click @b14"],
+    ["ok", "    ✓ clicked \"Save\" (AT-SPI, no cursor)"],
+    ["dim", "  ⎿ grim -g \"$(slurp)\" check.png"],
+    ["out", "    ✓ dialog closed, file on disk"]
+  ],
+  "features": [
+    ["Refs over pixels", "Snapshot the app's accessibility tree, act on a ref, snapshot again to check it worked."],
+    ["The right tool for each job", "Routes work to agent-desktop (AT-SPI), hyprctl, grim, wtype or ydotool."],
+    ["Safe by default", "Never sends Ctrl+Alt+F-key chords, and keeps snapshots and screenshots out of shared notes."]
+  ]
+}

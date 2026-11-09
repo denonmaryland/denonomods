@@ -1,0 +1,11 @@
+{
+  "label": "Full rice",
+  "preview": "pebble-shell.webp",
+  "wide": "pebble-shell-wide.webp",
+  "license": "MIT",
+  "features": [
+    ["The whole desktop", "Pebble Shell rail, a control corner, a search-first menu and recessed windows, set up together."],
+    ["Bundles the other mods", "Hello Lock, Theme Studio, Tricky Tiles and Softly come with it, plus Hyprland, fastfetch and foot configs."],
+    ["Asks before it changes anything", "Its installer lists everything it will replace, asks again, and backs up what it replaced."]
+  ]
+}

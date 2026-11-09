@@ -1,0 +1,12 @@
+{
+  "label": "Agent crew",
+  "preview": "project-pals.webp",
+  "wide": "project-pals-wide.webp",
+  "license": "MIT",
+  "tags": ["layout"],
+  "features": [
+    ["Pocket pets", "Every pal is a little LED critter whose pose shows what it's doing."],
+    ["Terminal-first", "A channel is its agent's own terminal: split it right or down, and answer prompts where they appear."],
+    ["Tasks, memory and a vault", "Give a pal a task, keep shared skills and memory, and read each pal's notes in the Vault."]
+  ]
+}
