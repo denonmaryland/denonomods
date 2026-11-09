@@ -1,0 +1,271 @@
+#!/usr/bin/env bash
+# DENONOMODS — DeNon's mod library: one place to find, install, update and remove
+# mods for Omarchy, Herdr (Project Pals), Claude Code, Hermes and whatever comes next.
+set -euo pipefail
+
+DM_ROOT="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+export DM_ROOT
+# shellcheck source=lib/common.sh
+source "$DM_ROOT/lib/common.sh"
+
+usage() {
+  cat <<EOF
+${c_bold}DENONOMODS${c_off} — DeNon's mod library
+
+  denonomods list [category]          every mod, with what's on this machine
+  denonomods info <mod>               what a mod is and where it goes
+  denonomods install <mod>... [--yes] install mods (asks first)
+  denonomods update [<mod>...] [--yes] update mods (default: every installed one)
+  denonomods remove <mod>... [--yes]  remove mods denonomods installed (asks first)
+  denonomods adopt <mod>...           start tracking mods already on this machine (changes nothing)
+  denonomods status                   what denonomods has installed
+  denonomods new <category> <id> --kind <kind>   start a new mod from a template
+  denonomods check                    validate every mod in the library
+  denonomods kinds                    the kinds of mod it knows how to install
+
+Categories: ${DM_CATEGORIES[*]}
+Status marks: ${c_ok}●${c_off} installed by denonomods   ◐ on this machine, not tracked   ○ not installed
+EOF
+}
+
+# --- argument parsing helpers -------------------------------------------------
+
+ARGS=()
+parse_flags() {
+  ARGS=()
+  local a
+  for a in "$@"; do
+    case "$a" in
+      -y | --yes) DM_YES=1 ;;
+      -h | --help) usage; exit 0 ;;
+      -*) die "unknown option: $a" ;;
+      *) ARGS+=("$a") ;;
+    esac
+  done
+  export DM_YES
+}
+
+status_mark() {
+  local id="$1"
+  if state_has "$id"; then printf '%s●%s' "$c_ok" "$c_off"
+  elif kind_call kind_detect "$id" 2>/dev/null; then printf '◐'
+  else printf '○'
+  fi
+}
+
+# --- commands -------------------------------------------------------------------
+
+cmd_list() {
+  local filter="${1:-}" cat id count=0
+  [[ -z "$filter" ]] || in_list "$filter" "${DM_CATEGORIES[@]}" || die "unknown category '$filter' (${DM_CATEGORIES[*]})"
+  for cat in "${DM_CATEGORIES[@]}"; do
+    [[ -z "$filter" || "$filter" == "$cat" ]] || continue
+    local ids=()
+    while IFS= read -r id; do
+      [[ "$(mod_get "$id" .category)" == "$cat" ]] && ids+=("$id")
+    done < <(all_mods)
+    ((${#ids[@]})) || continue
+    printf '\n%s%s%s\n' "$c_bold" "$cat" "$c_off"
+    for id in "${ids[@]}"; do
+      printf '  %s %-22s %s%s%s\n' "$(status_mark "$id")" "$id" "$(mod_get "$id" .name)" \
+        "$c_dim" " — $(mod_get "$id" .summary)$c_off"
+      count=$((count + 1))
+    done
+  done
+  printf '\n%s mod%s. More: denonomods info <mod>\n' "$count" "$( ((count == 1)) || printf s)"
+}
+
+cmd_info() {
+  local id="${1:-}"
+  [[ -n "$id" ]] || die "usage: denonomods info <mod>"
+  need_mod "$id"
+  local f; f="$(mod_file "$id")"
+  printf '%s%s%s  (%s)\n' "$c_bold" "$(mod_get "$id" .name)" "$c_off" "$id"
+  printf '%s\n\n' "$(mod_get "$id" .summary)"
+  printf '  category  %s\n' "$(mod_get "$id" .category)"
+  printf '  kind      %s\n' "$(mod_get "$id" .kind)"
+  printf '  source    %s\n' "$(jq -r '.source.git // ("bundled: " + .source.bundled)' "$f")"
+  printf '  goes to   %s\n' "$(kind_call kind_where "$id")"
+  [[ -z "$(mod_get "$id" .homepage)" ]] || printf '  homepage  %s\n' "$(mod_get "$id" .homepage)"
+  [[ -z "$(mod_get "$id" .requires)" ]] || printf '  needs     %s\n' "$(mod_get "$id" '.requires | join(", ")')"
+  printf '  status    '
+  if state_has "$id"; then printf 'installed by denonomods (%s, %s)\n' "$(state_get "$id" .how)" "$(state_get "$id" .installedAt)"
+  elif kind_call kind_detect "$id" 2>/dev/null; then printf 'on this machine, not tracked (to track it as is: denonomods adopt %s)\n' "$id"
+  else printf 'not installed\n'
+  fi
+  local notes; notes="$(mod_get "$id" .notes)"
+  [[ -z "$notes" ]] || printf '\n%s\n' "$notes"
+}
+
+cmd_install() {
+  (($#)) || die "usage: denonomods install <mod>... [--yes]"
+  local id
+  for id in "$@"; do need_mod "$id"; done
+  say "This will install:"
+  for id in "$@"; do
+    printf '  %-22s -> %s\n' "$id" "$(kind_call kind_where "$id")"
+    local notes; notes="$(mod_get "$id" .notes)"
+    [[ -z "$notes" ]] || printf '  %s%s%s\n' "$c_dim" "$notes" "$c_off"
+  done
+  confirm "Go ahead?" || { say "Nothing changed."; return 0; }
+  local failed=()
+  for id in "$@"; do
+    say ""
+    say "${c_bold}$id${c_off}"
+    if ! (check_requires "$id") || ! kind_call kind_install "$id"; then failed+=("$id"); fi
+  done
+  report "${failed[@]}"
+}
+
+cmd_update() {
+  local ids=("$@") id
+  if ((${#ids[@]} == 0)); then
+    mapfile -t ids < <(state_read | jq -r '.mods | keys[]')
+    ((${#ids[@]})) || { say "denonomods hasn't installed anything yet."; return 0; }
+  fi
+  for id in "${ids[@]}"; do
+    need_mod "$id"
+    state_has "$id" || die "$id isn't installed by denonomods (install it first)"
+  done
+  say "This will update: ${ids[*]}"
+  confirm "Go ahead?" || { say "Nothing changed."; return 0; }
+  local failed=()
+  for id in "${ids[@]}"; do
+    say ""
+    say "${c_bold}$id${c_off}"
+    kind_call kind_update "$id" || failed+=("$id")
+  done
+  report "${failed[@]}"
+}
+
+cmd_remove() {
+  (($#)) || die "usage: denonomods remove <mod>... [--yes]"
+  local id
+  for id in "$@"; do
+    need_mod "$id"
+    state_has "$id" || die "$id isn't installed by denonomods; it won't remove what it didn't install"
+  done
+  say "This will remove: $*"
+  confirm "Go ahead?" || { say "Nothing changed."; return 0; }
+  local failed=()
+  for id in "$@"; do
+    say ""
+    say "${c_bold}$id${c_off}"
+    kind_call kind_remove "$id" || failed+=("$id")
+  done
+  report "${failed[@]}"
+}
+
+cmd_adopt() {
+  (($#)) || die "usage: denonomods adopt <mod>..."
+  local id
+  for id in "$@"; do
+    need_mod "$id"
+    if state_has "$id"; then say "$id is already tracked"; continue; fi
+    kind_call kind_detect "$id" 2>/dev/null || die "$id isn't on this machine; install it instead"
+    state_set "$id" "$(mod_get "$id" .kind)" adopted "$(kind_call kind_target "$id")" ""
+    say "${c_ok}Tracking${c_off} $id (nothing changed). Now 'denonomods update' and 'remove' work on it."
+  done
+}
+
+report() {
+  say ""
+  if (($#)); then warn "didn't finish: $*"; return 1; fi
+  say "${c_ok}Done.${c_off}"
+}
+
+cmd_status() {
+  local ids
+  mapfile -t ids < <(state_read | jq -r '.mods | keys[]')
+  ((${#ids[@]})) || { say "denonomods hasn't installed anything yet. Try: denonomods list"; return 0; }
+  local id
+  for id in "${ids[@]}"; do
+    printf '  %s●%s %-22s %-10s %s\n' "$c_ok" "$c_off" "$id" "$(state_get "$id" .how)" "$(state_get "$id" .target)"
+  done
+}
+
+cmd_kinds() {
+  local f kind
+  for f in "$DM_KINDS"/*.sh; do
+    kind="$(basename "$f" .sh)"
+    printf '  %-24s %s\n' "$kind" "$(DM_ROOT="$DM_ROOT" "$BASH" -c 'source "$DM_ROOT/lib/common.sh"; source "$1"; printf %s "$KIND_SUMMARY"' _ "$f")"
+  done
+}
+
+cmd_check() {
+  local id f problems=0 why kind cat
+  for tool in jq git; do command -v "$tool" >/dev/null || { warn "missing tool: $tool"; problems=$((problems + 1)); }; done
+  local seen_ids=()
+  while IFS= read -r id; do
+    f="$(mod_file "$id")"
+    why=""
+    if ! valid_id "$id"; then why="folder name must be lowercase letters, digits and dashes"
+    elif ! jq -e . "$f" >/dev/null 2>&1; then why="mod.json isn't valid JSON"
+    else
+      [[ "$(jq -r .id "$f")" == "$id" ]] || why="id must match the folder name"
+      for field in name summary category kind source; do
+        [[ -n "$(jq -r ".$field // empty" "$f")" ]] || why="${why:+$why; }missing \"$field\""
+      done
+      cat="$(jq -r '.category // empty' "$f")"; kind="$(jq -r '.kind // empty' "$f")"
+      [[ -z "$cat" ]] || in_list "$cat" "${DM_CATEGORIES[@]}" || why="${why:+$why; }unknown category '$cat'"
+      if [[ -n "$kind" && ! -f "$DM_KINDS/$kind.sh" ]]; then why="${why:+$why; }unknown kind '$kind'"
+      elif [[ -z "$why" ]]; then why="$(kind_call kind_check "$id" 2>&1)" || true
+      fi
+      jq -e '(.source | (has("git") and has("bundled") | not))' "$f" >/dev/null || why="${why:+$why; }source is either git or bundled, not both"
+    fi
+    if [[ -n "$why" ]]; then printf '  ✗ %-22s %s\n' "$id" "$why"; problems=$((problems + 1))
+    else printf '  ✓ %s\n' "$id"
+    fi
+    seen_ids+=("$id")
+  done < <(all_mods)
+  ((problems == 0)) || die "$problems problem(s)"
+  say "${#seen_ids[@]} mods look good."
+}
+
+cmd_new() {
+  local cat="${1:-}" id="${2:-}" kind="${NEW_KIND:-}"
+  [[ -n "$cat" && -n "$id" && -n "$kind" ]] || die "usage: denonomods new <category> <id> --kind <kind>"
+  in_list "$cat" "${DM_CATEGORIES[@]}" || die "unknown category '$cat' (${DM_CATEGORIES[*]})"
+  valid_id "$id" || die "id must be lowercase letters, digits and dashes"
+  [[ -f "$DM_KINDS/$kind.sh" ]] || die "unknown kind '$kind' (see: denonomods kinds)"
+  local tpl="$DM_ROOT/templates/$kind"
+  [[ -d "$tpl" ]] || die "no template for $kind yet"
+  local dir; dir="$(mod_dir "$id")"
+  [[ ! -e "$dir" ]] || die "$dir already exists"
+  cp -a "$tpl" "$dir"
+  local name; name="$(sed -E 's/(^|-)([a-z])/\1\u\2/g; s/-/ /g' <<<"$id")"
+  find "$dir" -type f -exec sed -i "s/__ID__/$id/g; s/__NAME__/$name/g; s/__CATEGORY__/$cat/g" {} +
+  say "Made $dir"
+  say "Fill in mod.json (and the files beside it), then run: denonomods check"
+}
+
+# --- dispatch -------------------------------------------------------------------
+
+cmd="${1:-help}"
+(($#)) && shift
+NEW_KIND=""
+if [[ "$cmd" == new ]]; then
+  rest=()
+  while (($#)); do
+    case "$1" in --kind) NEW_KIND="${2:-}"; shift 2 || die "--kind needs a value" ;; *) rest+=("$1"); shift ;; esac
+  done
+  set -- "${rest[@]+"${rest[@]}"}"
+fi
+parse_flags "$@"
+set -- "${ARGS[@]+"${ARGS[@]}"}"
+
+case "$cmd" in
+  list | ls) cmd_list "$@" ;;
+  info | show) cmd_info "$@" ;;
+  install | add) cmd_install "$@" ;;
+  update | up) cmd_update "$@" ;;
+  remove | rm | uninstall) cmd_remove "$@" ;;
+  adopt) cmd_adopt "$@" ;;
+  status) cmd_status ;;
+  new) cmd_new "$@" ;;
+  check | validate) cmd_check ;;
+  kinds) cmd_kinds ;;
+  help | -h | --help) usage ;;
+  version | --version) cat "$DM_ROOT/VERSION" ;;
+  *) warn "unknown command: $cmd"; usage >&2; exit 2 ;;
+esac

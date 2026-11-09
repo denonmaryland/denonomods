@@ -1,0 +1,12 @@
+{
+  "id": "softly",
+  "name": "Softly",
+  "category": "omarchy",
+  "kind": "omarchy-plugin",
+  "summary": "Tap a key, speak, tap again: local Whisper dictation with a quiet pill and a bar popover",
+  "pluginId": "io.github.denonmaryland.softly",
+  "source": { "git": "https://github.com/denonmaryland/omarchy-softly" },
+  "homepage": "https://github.com/denonmaryland/omarchy-softly",
+  "requires": ["omarchy"],
+  "notes": "Softly is its own project; this installs its public Omarchy plugin. Dictation needs Voxtype, see its README."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "__ID__",
+  "name": "__NAME__",
+  "category": "__CATEGORY__",
+  "kind": "repo-installer",
+  "summary": "One line: what it does for you",
+  "source": { "git": "https://github.com/denonmaryland/__ID__" },
+  "homepage": "https://github.com/denonmaryland/__ID__",
+  "install": ["./install.sh"],
+  "detect": "~/.config/__ID__",
+  "requires": ["git"],
+  "removeNotes": "How to undo it by hand (or add \"uninstall\" steps instead)."
+}

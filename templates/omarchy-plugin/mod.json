@@ -1,0 +1,11 @@
+{
+  "id": "__ID__",
+  "name": "__NAME__",
+  "category": "__CATEGORY__",
+  "kind": "omarchy-plugin",
+  "summary": "One line: what it does for you",
+  "version": "0.1.0",
+  "pluginId": "denon.__ID__",
+  "source": { "bundled": "files" },
+  "requires": ["omarchy"]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "hello-lock",
+  "name": "Hello Lock",
+  "category": "omarchy",
+  "kind": "omarchy-plugin",
+  "summary": "A lock screen that greets you: your name and logo, a power-down on lock and a power-on animation on unlock",
+  "pluginId": "hello-lock",
+  "source": { "git": "https://github.com/denonmaryland/hello-lock" },
+  "homepage": "https://github.com/denonmaryland/hello-lock",
+  "requires": ["omarchy"],
+  "notes": "Takes over the lock screen. Restart the shell afterwards and lock once to check it."
+}

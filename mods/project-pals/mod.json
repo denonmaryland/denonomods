@@ -1,0 +1,15 @@
+{
+  "id": "project-pals",
+  "name": "Project Pals",
+  "category": "herdr",
+  "kind": "repo-installer",
+  "summary": "A Herdr layout that turns your coding agents into a crew of pals: channels as tabs, rooms, tasks, routines, memory",
+  "source": { "git": "https://github.com/denonmaryland/project-pals" },
+  "homepage": "https://github.com/denonmaryland/project-pals",
+  "install": ["./install.sh"],
+  "detect": "~/.config/herdr-app/layouts/pals.json",
+  "requires": ["git", "rsync", "python3"],
+  "notes": "Needs Herdr opened once first. Also installs crewd (a user service) and Claude Code hooks; ~/.claude/settings.json is backed up first.",
+  "afterInstall": "Switch Herdr to the pals layout with Ctrl+Shift+L.",
+  "removeNotes": "Its mods are ~/.config/herdr-app/mods/crew-* and its layout is ~/.config/herdr-app/layouts/pals.json; earlier copies are in ~/.config/herdr-app/.crew-backups/."
+}

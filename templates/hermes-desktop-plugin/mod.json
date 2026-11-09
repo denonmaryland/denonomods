@@ -1,0 +1,10 @@
+{
+  "id": "__ID__",
+  "name": "__NAME__",
+  "category": "__CATEGORY__",
+  "kind": "hermes-desktop-plugin",
+  "summary": "One line: what it changes in the Hermes desktop app",
+  "version": "0.1.0",
+  "source": { "bundled": "files" },
+  "requires": []
+}

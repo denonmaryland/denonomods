@@ -1,0 +1,11 @@
+{
+  "id": "omarchy-computer-use",
+  "name": "Omarchy Computer Use",
+  "category": "claude-code",
+  "kind": "claude-skill",
+  "summary": "Teaches Claude Code to drive desktop apps on Hyprland: AT-SPI clicks, hyprctl, grim, wtype, ydotool",
+  "version": "0.1.0",
+  "source": { "bundled": "files" },
+  "requires": [],
+  "notes": "Uses agent-desktop and the a11y-keepalive service for most jobs; the skill says what to run when they're missing."
+}

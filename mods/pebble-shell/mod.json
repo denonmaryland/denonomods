@@ -1,0 +1,14 @@
+{
+  "id": "pebble-shell",
+  "name": "Pebble Shell",
+  "category": "omarchy",
+  "kind": "repo-installer",
+  "summary": "The whole DeNon desktop: Pebble Shell rail, control corner, search-first menu, recessed windows, fastfetch",
+  "source": { "git": "https://github.com/denonmaryland/omarchy-dotfiles" },
+  "homepage": "https://github.com/denonmaryland/omarchy-dotfiles",
+  "install": ["./install.sh"],
+  "detect": "~/.config/omarchy/plugins/denon.shell",
+  "requires": ["omarchy", "git"],
+  "notes": "Big one: replaces the bar layout, Hyprland look and keys, fastfetch and foot, and adds 24 shell plugins. Its installer lists everything and asks again before changing anything.",
+  "removeNotes": "Its installer backed up everything it replaced to ~/.config/omarchy-dotfiles-backup/<time>/; copy those back to undo it."
+}

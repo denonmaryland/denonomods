@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "denon.__ID__",
+  "name": "__NAME__",
+  "version": "0.1.0",
+  "author": "DeNon Maryland",
+  "description": "One line: what it does for you",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "Widget.qml" },
+  "barWidget": { "displayName": "__NAME__", "description": "One line", "category": "Appearance", "allowMultiple": false }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "theme-studio",
+  "name": "Theme Studio",
+  "category": "omarchy",
+  "kind": "omarchy-plugin",
+  "summary": "Browse, apply, rotate and install Omarchy themes from the bar, with wallpapers and per-theme borders",
+  "pluginId": "io.github.denonmaryland.theme-studio",
+  "source": { "git": "https://github.com/denonmaryland/omarchy-theme-studio" },
+  "homepage": "https://github.com/denonmaryland/omarchy-theme-studio",
+  "requires": ["omarchy"]
+}

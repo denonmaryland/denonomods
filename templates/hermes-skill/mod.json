@@ -1,0 +1,10 @@
+{
+  "id": "__ID__",
+  "name": "__NAME__",
+  "category": "__CATEGORY__",
+  "kind": "hermes-skill",
+  "summary": "One line: what it teaches Hermes",
+  "version": "0.1.0",
+  "source": { "bundled": "files" },
+  "requires": []
+}

@@ -1,0 +1,11 @@
+{
+  "id": "hermes-rice",
+  "name": "Hermes Rice",
+  "category": "hermes",
+  "kind": "hermes-desktop-plugin",
+  "summary": "A flat-shell look for the Hermes desktop app: 60px rail, Sessions and Bots side by side, legible text",
+  "version": "0.1.0",
+  "source": { "bundled": "files" },
+  "requires": [],
+  "notes": "Keeps your Omarchy palette and fonts. Switch it off any time in Hermes under Settings → Plugins."
+}

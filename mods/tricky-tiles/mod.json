@@ -1,0 +1,11 @@
+{
+  "id": "tricky-tiles",
+  "name": "Tricky Tiles",
+  "category": "omarchy",
+  "kind": "omarchy-plugin",
+  "summary": "Spring physics for switching windows and workspaces, with presets, a live preview and finger-following swipes",
+  "pluginId": "io.github.denonmaryland.tricky-tiles",
+  "source": { "git": "https://github.com/denonmaryland/omarchy-tricky-tiles" },
+  "homepage": "https://github.com/denonmaryland/omarchy-tricky-tiles",
+  "requires": ["omarchy"]
+}
